@@ -6,6 +6,7 @@ Autism Spectrum Disorder (ASD), known as autism, is a lifelong developmental dis
 * Python >= 3.8
 * [PyTorch](https://pytorch.org) >= 1.8
 * [kinetics-i3d](https://github.com/deepmind/kinetics-i3d) (if you want to use i3d feature extractor)
+* [EfficientNets] (https://github.com/lukemelas/EfficientNet-PyTorch) or `pip install efficientnet_pytorch`
 
 ### Datasets
 Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dataset. The dataset’s videos are in nature and recorded in an uncontrolled environment [1]. Three actions in this dataset: Armflapping, Headbanging, and Spinning. The total actual videos reported in original paper was 75 videos, in    which only 60 are downloadable due to privacy concerns of Youtube. In this dataset, some of videos are too noisy (almost in a very dark environment). We collected a few new videos from Youtube to replace these noisy videos in the dataset. In our new dataset, there are total 61 videos. Here are the detail of this new dataset: 
@@ -13,6 +14,8 @@ Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dat
 |           |*Armflapping*|*Headbanging*|*Spinning*|
 |:-----------------:|:--------:|:----------:|:-----------:|
 | `No. Videos in our new dataset ` |   20   |    21    |      20      |
+### Feature extractor
+1. EfficientNet
 
 ### Training
 #### with pre-processed features
