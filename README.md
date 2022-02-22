@@ -35,7 +35,8 @@ Here is a example of using `EfficientNetB3+TCN` model.
 1. Put your images under `data/images`.  
 2. run `python train_with_images.py`. And you can modify the command based on the fellowing instructions:
 ![Loading Command](data/command2.png "Command")
-3. The trained model's parameters would be saved under `model_zoo/your_model_zoo`.
+3. The trained model's parameters would be saved under `model_zoo/your_model_zoo`.  
+
 If you want to use different model, just changed this line to your desired model.  
 ![Loading Command](data/command3.png "Command")
 
