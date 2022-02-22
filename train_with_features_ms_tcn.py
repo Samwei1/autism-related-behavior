@@ -56,7 +56,7 @@ if __name__ == '__main__':
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
     model = MultiStageTCN(input_size, output_size, num_stages)
-    print("1. Model TCN loaded")
+    print("1. Model MS-TCN loaded")
     losses = AverageMeter('Loss', ':.4e')
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = ActionSegmentationLoss(

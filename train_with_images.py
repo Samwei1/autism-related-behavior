@@ -62,7 +62,7 @@ if __name__ == '__main__':
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
     model = efficientnet_tcn(output_size, hidden_size, fc_size,dropout, k_size, level_size)
-    print("1. Model TCN loaded")
+    print("1. Model loaded")
 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_f = torch.nn.CrossEntropyLoss()
