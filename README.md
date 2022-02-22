@@ -12,7 +12,7 @@ Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dat
 
 ### Training
 #### with pre-processed features
-1. In default, you can used my extracted features in `data/i3d_feature`. The features were extracted by I3D model that pre-trained on Kinetice dataset.  
+1. Sorry. Due to ethical issues, I couldn't public the extracted features. Please use your own features. In default, you can used my extracted features in `data/i3d_feature`. The features were extracted by I3D model that pre-trained on Kinetice dataset.  
   Run with `python train_with_features_tcn.py`（for TCN model） or `python train_with_features_ms_tcn.py` (for MS-TCN model) 
   Then, the trained model parameters will be saved in `model_zoo/your_model_zoo`
 2. Using your own features 
