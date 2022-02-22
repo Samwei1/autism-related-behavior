@@ -22,7 +22,7 @@ def get_feature(PATH):
     training_lables = []
     for file in os.listdir(PATH):
         file_path = os.path.join(PATH, file)
-        if "AF" in file:
+        if "arm" in file or "others" in file or "AF" in file:
             if training_features is None:
                 training_features = np.load(file_path)
                 labels = [0 for i in range(len(training_features))]
@@ -32,7 +32,7 @@ def get_feature(PATH):
                 training_features = np.concatenate((training_features, features), axis=0)
             training_lables.extend(labels)
 
-        if "HB" in file:
+        if "head" in file or "HB" in file or "HB" in file:
             if training_features is None:
                 training_features = np.load(file_path)
                 labels = [1 for i in range(len(training_features))]
@@ -42,7 +42,7 @@ def get_feature(PATH):
                 training_features = np.concatenate((training_features, features), axis=0)
             training_lables.extend(labels)
 
-        if "SP" in file:
+        if "spin" in file or "SP" in file:
             if training_features is None:
                 training_features = np.load(file_path)
                 labels = [2 for i in range(len(training_features))]
