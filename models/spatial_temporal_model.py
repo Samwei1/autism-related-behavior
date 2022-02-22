@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from efficientnet_pytorch import EfficientNet
 from torchvision import models
-from tcn import TCN
+from models.tcn import TCN
 
 
 class resnet_lstm(nn.Module):
