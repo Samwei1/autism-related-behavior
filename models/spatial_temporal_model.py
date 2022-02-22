@@ -105,7 +105,7 @@ class efficientnet_lstm(nn.Module):
 
 
 class efficientnet_tcn(nn.Module):
-    def __init__(self, num_classes, hidden_size, fc_size, dropout=0, k_size=2, train_cnn = False):
+    def __init__(self, num_classes, hidden_size, fc_size, dropout=0, k_size=2,level_Size =5, train_cnn = False):
         super(efficientnet_tcn, self).__init__()
         self.hidden_size = hidden_size
         self.num_classes = num_classes
@@ -116,8 +116,7 @@ class efficientnet_tcn(nn.Module):
         for i, param in enumerate(self.feature_model.parameters()):
             param.requires_grad = train_cnn
         self.fc_pre = nn.Sequential(nn.Linear(1536, fc_size), nn.Dropout())
-        Level_Size = 5
-        Num_Chans = [hidden_size] * (Level_Size - 1) + [fc_size]
+        Num_Chans = [hidden_size] * (level_Size - 1) + [fc_size]
         self.rnn = TCN(fc_size, num_classes, Num_Chans, k_size, dropout, 64)
         self.fc_size = fc_size
 
