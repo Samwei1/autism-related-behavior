@@ -18,5 +18,5 @@ Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dat
 2. Using your own features 
    Put your features file under `data/other_features`. And change the command based on the instructions below:
    ![Loading Command](data/command.png "Command")
-   And: 
+   OR: 
    ![Loading Command](data/command1.png "Command")
