@@ -18,6 +18,7 @@ Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dat
 There are some feature extractors that you can use 
 1. EfficientNet (Remember to install EfficientNet package)
 2. MobileNet (Aleardy in this repository). This package is from https://github.com/d-li14/mobilenetv3.pytorch.
+3. RGB stream I3D. Due to license issues, you need to download by yourself and put this package under `extractor_models`. And you can use `i3d_extractor.py` to extract features. 
 
 ### Training
 #### with iamge features
