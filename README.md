@@ -20,7 +20,7 @@ There are some feature extractors that you can use
 2. MobileNet (Aleardy in this repository). This package is from https://github.com/d-li14/mobilenetv3.pytorch.
 
 ### Training
-#### with pre-processed features
+#### with iamge features
 1. Sorry. Due to ethical issues, I couldn't public the extracted features. Please use your own features (see 2.). In default, you can used my extracted features in `data/i3d_feature`. The features were extracted by I3D model that pre-trained on Kinetice dataset.  
   Run with `python train_with_features_tcn.py`（for TCN model） or `python train_with_features_ms_tcn.py` (for MS-TCN model) 
   Then, the trained model parameters will be saved in `model_zoo/your_model_zoo`
