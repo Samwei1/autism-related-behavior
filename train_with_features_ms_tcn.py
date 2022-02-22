@@ -2,8 +2,10 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import f1_score
 from utils import data_loader, data_retrieval
-from models.tcn import TCN
+from models.ms_tcn.ms_tcn import MultiStageTCN
+from models.ms_tcn.ms_tcn_loss import AverageMeter, ActionSegmentationLoss
 import argparse
+import numpy as np
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -12,11 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_set_path', default="data/i3d_feature/test")
     parser.add_argument('--input_size', type=int, default=1024)
     parser.add_argument('--output_size', type=int, default=3)
-    parser.add_argument('--hidden_size', type=int, default=128)
-    parser.add_argument('--level_size', type=int, default=10)
-    parser.add_argument('--k_size', type=int, default=2)
-    parser.add_argument('--drop_out', type=int, default=0.1)
-    parser.add_argument('--fc_size', type=int, default=128)
+    parser.add_argument('--num_stages', type=list, default=['dilated', 'dilated', 'dilated', 'dilated'])
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--num_epochs', type=int, default=100)
     args = parser.parse_args()
@@ -51,34 +49,33 @@ if __name__ == '__main__':
 
     input_size = args.input_size
     output_size = args.output_size
-    k_size = args.k_size
-    hidden_size = args.hidden_size
-    level_size = args.level_size
-    num_chans = [hidden_size] * (level_size - 1) + [input_size]
-    dropout = args.drop_out
-    fc_size = args.fc_size
+    num_stages = args.num_stages
     num_epochs = args.num_epochs
     learning_rate = 3 * 1e-5
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
-    model = TCN(input_size, output_size, num_chans, k_size, dropout, fc_size)
+    model = MultiStageTCN(input_size, output_size, num_stages)
     print("1. Model TCN loaded")
-
+    losses = AverageMeter('Loss', ':.4e')
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    loss_f = torch.nn.CrossEntropyLoss()
+    criterion = ActionSegmentationLoss(
+        ce=True, tmse=True, weight=None,
+        ignore_index=255, tmse_weight=0.15
+    )
 
     print("2. Start training")
     model.to(device)
     model.train()
     n_total_steps = len(train_loader)
-    PATH = "model_zoo/your_model_zoo/tcn.pkl"
     max_val_f1_score = None
+    PATH = "model_zoo/your_model_zoo/ms_tcn.pkl"
+    max_val_f1_score = None
+
     train_loss = []
     val_loss = []
     f1_score_ = []
     train_f1_score_ = []
-
     for epoch in range(num_epochs):
         train_l = 0
         val_l = 0
@@ -87,63 +84,48 @@ if __name__ == '__main__':
         for i, (x, y) in enumerate(train_loader):
             # forward
             train_set = x.to(device)
+            ground_truth = np.zeros((len(x), 12))
+            for k in range(len(x)):
+                ground_truth[k, :] = np.array([y[k] for _ in range(12)])
+            ground_truth = torch.tensor(ground_truth).to(device)
             train_set.transpose_(2, 1)
-            ground_truth = y.to(device)
-            outputs = model(train_set)
-            print(outputs.shape)
-            loss = loss_f(outputs, ground_truth)
+            output = model(train_set)
+
+            if isinstance(output, list):
+                loss = 0.0
+                for out in output:
+                    ground_truth = ground_truth.type(torch.LongTensor).to(device)
+                    loss += criterion(out, ground_truth, train_set)
+            else:
+                loss = criterion(output, ground_truth.type(torch.LongTensor), train_set)
 
             optimizer.zero_grad()
 
             # backtrack
             loss.backward()
             optimizer.step()
-
             with torch.no_grad():
                 model.eval()
-                train_f1_score = f1_score(ground_truth.data.to('cpu'),
-                                          outputs.data.to('cpu').max(1, keepdim=True)[1].squeeze(), average='macro')
-                val_x = val_x.to(device)
-                val_y = val_y.to(device)
-
-                val_outputs = model(val_x)
-                val_f1_score = f1_score(val_y.data.to('cpu'),
-                                        val_outputs.data.to('cpu').max(1, keepdim=True)[1].squeeze(), average='macro')
-                val_loss_ = loss_f(val_outputs, val_y)
-
+                val_x_ = val_x.to(device)
+                val_output = model(val_x_)
+                output_ = val_output.max(1)[1].squeeze(0).cpu().numpy()
+                pre = []
+                for i in range(len(output_)):
+                    kk = output_[i]
+                    counts = np.bincount(kk)
+                    pre.append(np.argmax(counts))
+                val_f1_score = f1_score(val_y, pre, average='weighted')
                 if max_val_f1_score is None:
                     max_val_f1_score = val_f1_score
-                    torch.save(model.state_dict(), PATH)
                 else:
                     if max_val_f1_score < val_f1_score:
                         max_val_f1_score = val_f1_score
                         torch.save(model.state_dict(), PATH)
-                print(
-                    f' epoch {epoch + 1}/{num_epochs}, step {i + 1}/{n_total_steps}, train loss {loss.item():.4f}, val loss {val_loss_.item()}, val f1-score {val_f1_score}')
-                train_l += loss.item()
-                val_l += val_loss_.item()
-                f1_ += val_f1_score
-                train_f1 += train_f1_score
+                model.train()
 
-            model.train()
-        train_l = train_l / len(train_loader)
-        val_l = val_l / len(train_loader)
-        f1_ = f1_ / len(train_loader)
-        train_f1 = train_f1 / len(train_loader)
-        train_loss.append(train_l)
-        val_loss.append(val_l)
-        f1_score_.append(f1_)
-        train_f1_score_.append(train_f1)
+            print(
+                f'epoch: {epoch} batch: {i} / {len(train_loader)} loss: {loss.item()} val weighted f1-score: {val_f1_score}')
 
-    print("2. Finished training")
-
-
-
-
-
-
-
-
-
+        print("2. Finished training")
 
 
