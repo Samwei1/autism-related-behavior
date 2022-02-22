@@ -44,6 +44,9 @@ if __name__ == '__main__':
     train_dataset = data_loader.NumpyDataset(train_images, train_labels)
     batch_size = args.batch_size
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+
+    val_dataset = data_loader.NumpyDataset(val_images, val_labels)
+    val_loader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False)
     print("0. Finished dataset preparation")
 
     fc_size = args.fc_size
@@ -64,4 +67,83 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_f = torch.nn.CrossEntropyLoss()
 
+    model.to(device)
+    n_total_steps = len(train_loader)
+    max_val_f1_score = None
+    PATH = "model_zoo/your_model_zoo/train_with_images.pkl"
+    train_loss = []
+    val_loss = []
+    f1_score_ = []
+    train_f1_score_ = []
+    for epoch in range(num_epochs):
+        train_l = 0
+        val_l = 0
+        f1_ = 0
+        train_f1 = 0
+        for i, (x, y) in enumerate(train_loader):
+            # forward
+            model.train()
+            train_set = x.to(device)
+            ground_truth = y.to(device)
+            outputs = model(train_set)
+            print(outputs.shape)
+            loss = loss_f(outputs, ground_truth)
+
+            optimizer.zero_grad()
+
+            # backtrack
+            loss.backward()
+            optimizer.step()
+
+            model.eval()
+            with torch.no_grad():
+                if len(ground_truth) > 1:
+                    train_f1_score = f1_score(ground_truth.data.to('cpu'),
+                                              outputs.data.to('cpu').max(1, keepdim=True)[1].squeeze(),
+                                              average='weighted')
+                else:
+                    train_f1_score = 1
+                counter_val_loss = 0
+                predict_labels = []
+                for j, (val_input, val_class) in enumerate(val_loader):
+                    val_x = val_input.to(device)
+                    val_y = val_class.to(device)
+
+                    val_outputs = model(val_x)
+                    val_loss_ = loss_f(val_outputs, val_y)
+                    counter_val_loss += val_loss_.item()
+                    val_outputs = val_outputs.data.to('cpu').max(1, keepdim=True)[1].squeeze()
+                    val_outputs = val_outputs.tolist()
+                    if isinstance(val_outputs, int):
+                        predict_labels.append(val_outputs)
+                    else:
+                        predict_labels.extend(val_outputs)
+
+                counter_val_loss = counter_val_loss / len(val_loader)
+                counter_val_f1_score = f1_score(val_labels, predict_labels, average='weighted')
+
+                if max_val_f1_score is None:
+                    max_val_f1_score = counter_val_loss
+                else:
+                    if max_val_f1_score < counter_val_f1_score:
+                        max_val_f1_score = counter_val_f1_score
+                        torch.save(model.state_dict(), PATH)
+                #
+                print(
+                    f' epoch {epoch + 1}/{num_epochs}, step {i + 1}/{n_total_steps}, train loss {loss.item():.4f}, val loss {val_loss_.item()}, val f1-score {counter_val_f1_score} ')
+                train_l += loss.item()
+                val_l += counter_val_loss
+                f1_ += counter_val_f1_score
+                train_f1 += train_f1_score
+
+        train_l = train_l / len(train_loader)
+        val_l = val_l / len(train_loader)
+        f1_ = f1_ / len(train_loader)
+        train_f1 = train_f1 / len(train_loader)
+        train_loss.append(train_l)
+        val_loss.append(val_l)
+        f1_score_.append(f1_)
+        train_f1_score_.append(train_f1)
+
+        print("2. Finished training")
 
