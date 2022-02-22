@@ -16,7 +16,7 @@ Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dat
 | `No. Videos in our new dataset ` |   20   |    21    |      20      |
 ### Feature extractor
 There are some feature extractors that you can use 
-1. EfficientNet (Remember install EfficientNet package)
+1. EfficientNet (Remember to install EfficientNet package)
 2. MobileNet (Aleardy in this repository). This package is from https://github.com/d-li14/mobilenetv3.pytorch.
 
 ### Training
