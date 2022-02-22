@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('--drop_out', type=int, default=0.1)
     parser.add_argument('--fc_size', type=int, default=128)
     parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--num_epochs', type=int, default=200)
+    parser.add_argument('--num_epochs', type=int, default=2)
     args = parser.parse_args()
     # -------------------- read features -------------------
     print("0. Begin to read features")
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     model.to(device)
     model.train()
     n_total_steps = len(train_loader)
-    PATH = "model_zoo/your_model_zoo/TCN.pkl"
+    PATH = "model_zoo/your_model_zoo/tcn.pkl"
     max_val_f1_score = None
     train_loss = []
     val_loss = []
@@ -113,11 +113,11 @@ if __name__ == '__main__':
 
                 if max_val_f1_score is None:
                     max_val_f1_score = val_f1_score
+                    torch.save(model.state_dict(), PATH)
                 else:
                     if max_val_f1_score < val_f1_score:
                         max_val_f1_score = val_f1_score
                         torch.save(model.state_dict(), PATH)
-                target_names = ['class 0', 'class 1', 'class 2']
                 print(
                     f' epoch {epoch + 1}/{num_epochs}, step {i + 1}/{n_total_steps}, train loss {loss.item():.4f}, val loss {val_loss_.item()}, val f1-score {val_f1_score}')
                 train_l += loss.item()
