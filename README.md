@@ -16,7 +16,7 @@ Self-Stimulatory Behaviour Dataset (SSBD) is the only one publicly available dat
 |:-----------------:|:--------:|:----------:|:-----------:|
 | `No. Videos in our new dataset ` |   20   |    21    |      20      |
 
-The detail of each video is shown in (url_list.pdf "Framework overview")
+The detail of each video is shown in [url_list.pdf](url_list.pdf)
 
 ### Feature extractor
 There are some feature extractors that you can use 
