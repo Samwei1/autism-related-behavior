@@ -1,4 +1,4 @@
-# Activity Recognition in Childrenwith Autism-Related Behaviors
+# Activity Recognition in Children with Autism-Related Behaviors
 ![Loading Framework](data/framework_updated.png "Framework overview")
 
 Advances in machine learning and contactless sensors have led to the capability of understanding complex human behaviors in a healthcare setting. 
