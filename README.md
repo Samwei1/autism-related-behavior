@@ -14,7 +14,8 @@ Due to ethical issues, publicly available datasets showing autism behavior are l
 
 |           |*Armflapping*|*Headbanging*|*Spinning*|
 |:-----------------:|:--------:|:----------:|:-----------:|
-| `No. Videos in our new dataset ` |   20   |    21    |      20      |
+| `No. Videos in original SSBD dataset [Shyam et al.](https://openaccess.thecvf.com/content_iccv_workshops_2013/W22/papers/Rajagopalan_Self-Stimulatory_Behaviours_in_2013_ICCV_paper.pdf) ` |   23   |    19    |      18      |
+| `No. Videos in the updated SSBD dataset ` |   20   |    21    |      20      |
 
 The detail of each video is shown in [url_list.pdf](url_list.pdf)
 
