@@ -29,7 +29,8 @@ Here are some selected results:
 |:-----------------:|:--------:|:-----------:|
 | `ResNet18_vd + TCN` |   0.52   | 11.72M|
 | `EfficientNet-B3 + TCN` |   0.67   |  12M|
-| `RGB I3D + TCN` |   0.75   |  12M|
+| `ESNet + MS-TCN` |   0.67   |  12M|
+| `RGB I3D + TCN` |   0.71   |  2M|
 | `RGB I3D + MS-TCN` |   **0.83**   |  12M|
 
 Other results, including lightweight models, will be public soon with more resource-efficient techniques.
