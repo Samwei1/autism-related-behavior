@@ -21,6 +21,10 @@ Thus, we collected new videos from YouTube to enhance the original dataset follo
 
 The detail of each video is shown in [url_list.pdf](url_list.pdf)
 
+### Result
+
+
+
 ### Feature extractor
 There are some feature extractors that you can use 
 1. EfficientNet (Remember to install EfficientNet package)
